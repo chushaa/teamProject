@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Scrabble Tornament Data Set</title>
+		<meta charset="UTF-8">
+		<meta name="Informational Web Application" content="HTML5,CSS3,JavaScript, JSON, jquery, Charts.js, Fushion-Charts, Reactjs">
+		<meta name="keywords" content="HTML5,CSS3,JavaScript, JSON, jquery, Charts.js, Fushion-Charts, Reactjs">
+		<meta name="Shaum Chughtai, Ryne Larson, Sahasha Reese" content="Scrabble Tournament Data">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script
+			src="https://code.jquery.com/jquery-3.2.1.min.js"
+			integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+			crossorigin="anonymous"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.js" ></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.bundle.min.js" ></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.js" ></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.0/Chart.min.js" ></script>
+		<script type="text/javascript" src="http://static.fusioncharts.com/code/latest/fusioncharts.js"></script>
+		<script type="text/javascript" src="http://static.fusioncharts.com/code/latest/themes/fusioncharts.theme.fint.js?cacheBust=56"></script>
+		<script type = "text/javascript" src = "data/data.json"></script>
+		<script type = "text/javascript" src = "data/data.js"></script>
+		<script type = "text/javascript" src = "script.js"></script>
+		<link rel="stylesheet" type="text/css" href="styles.css">
+	</head>
+	<body onLoad = "tableMaker()">
+		<div id = "topLeft">
+			<div id = "topHalf">
+				<div class="chart-container">
+					<canvas id="chart"></canvas>
+			</div>
+			</div>
+			
+			<div id = "bottomHalf">
+				<div id = "second-chart-container">Loading Chart....</div>
+			</div>
+		</div>
+		
+		<div id = "topRight">
+			<img src = "images/logo.png" alt = "Scrabble Logo" style = "height: 10vh; width: 60%; align: center; display: block; margin-left: auto; margin-right: auto; margin-top: 2vh;">
+			<h1>Tornament Data</h1>
+			<br>
+			<p>This site is designed to show the various tornament data from December 1998 to January 1999</p>
+		</div>
+	
+		<div id = "bottom">
+		</div>
+		
+		<script>
+					var highRating = 0;
+					var lowRating = 1000000;
+					var average = 0;
+		
+	var data = {
+		labels : tournamentData.mapProperty('winnerpos'),
+		datasets: [{
+			label: "Scrabble Competitor Data",
+			backgroundColor: "rgba(255,99,132,0.2)",
+			borderColor: "rgba(255,99,132,1)",
+			borderWidth: 2,
+			hoverBackgroundColor: "rgba(128,128,128,0.5)",
+			hoverBorderColor: "rgba(128,128,128,0.5)",
+			data : tournamentData.mapProperty('winnernewrating')
+		}]
+	};
+
+	var options = {
+		maintainAspectRatio: false,
+		scales: {
+			yAxes: [{
+				stacked: true,
+				gridLines: {
+					display: true,
+					color: "rgba(128,128,128,0.5)"
+				}
+			}],
+			xAxes: [{
+				gridLines: {
+					display: false
+				}
+			}]
+		}
+	};
+Chart.Line('chart', {
+	options: options,
+	data: data
+	});
+//Global Options
+Chart.defaults.global.responsive = true;
+
+		function highestRating(){
+				for (var i = 0; i < scrabbleData.length; i++){
+					if (highRating < scrabbleData[i].winnernewrating){
+						highRating = scrabbleData[i].winnernewrating;
+					}
+				}
+		}
+		
+		function lowestRating(){
+				for (var i = 0; i < scrabbleData.length; i++){
+					if (lowRating > scrabbleData[i].losernewrating){
+						lowRating = scrabbleData[i].losernewrating;
+					}
+				}
+		}
+		
+		function averageRating(){
+			var total = 0;
+			for (var i = 0; i < scrabbleData.length; i++){
+					total += scrabbleData[i].winnernewrating;
+			}
+			average = total / scrabbleData.length;
+		}
+			
+	FusionCharts.ready(function(){
+			highestRating();
+			lowestRating();
+			averageRating();
+			
+			var low = lowRating.toString();
+			var high = highRating.toString();
+			var avrg = average.toString();
+			
+			var fusioncharts = new FusionCharts({
+			type: 'hbullet',
+			renderAt: 'second-chart-container',
+			id: 'rev-bullet-1',
+			width: '500',
+			height: '90',
+			dataFormat: 'json',
+			dataSource: {
+					"chart": {
+							"theme": "fint",
+							"lowerLimit": "0",
+							"subCaptionFontSize": "11",
+							"upperLimit": high,
+							"caption": "Average Wins",
+							"subcaption": "Scrabble Tournament",
+							"numberPrefix": "",
+							"numberSuffix": "",
+							"chartBottomMargin": "25"
+					},
+					"colorRange": {
+							"color": [{
+									"minValue": "0",
+									"maxValue": low,
+									"code": "#e44a00",
+									"alpha": "25"
+							}, {
+									"minValue": low,
+									"maxValue": avrg,
+									"code": "#f8bd19",
+									"alpha": "25"
+							}, {
+									"minValue": avrg,
+									"maxValue": "140r",
+									"code": "#6baa01",
+									"alpha": "25"
+							}]
+					},
+					"value": avrg,
+					"target": "120"
+			}
+	}
+	);
+			fusioncharts.render();
+	});
+	
+function tableMaker(){
+		var col = [];
+		for (var i = 0; i < scrabbleData.length; i++){
+			for (var key in scrabbleData[i]){
+				if (i != 2 || i != 3|| i != 5|| i != 9|| i != 11|| i != 16){
+					if (col.indexOf(key) === -1) {
+						col.push(key);
+						}
+					}	
+				}
+			}
+		
+		var table = document.createElement("table");
+		
+		var tr = table.insertRow(-1);
+		for (var i = 0; i < col.length; i++){		
+			var th = document.createElement("th");
+			th.innerHTML = col[i];
+			tr.appendChild(th);
+		}
+		
+		for (var i = 0; i < scrabbleData.length; i++){
+			tr = table.insertRow(-1);
+			
+			for (var j = 0; j < col.length; j++){
+				var tabCell = tr.insertCell(-1);
+				tabCell.innerHTML = scrabbleData[i][col[j]];
+			}
+		}
+		
+		var divContainer = document.getElementById("bottom");
+		divContainer.innerHTML = "";
+		divContainer.appendChild(table);
+	}
+		</script>
+	</body>
+</html>
